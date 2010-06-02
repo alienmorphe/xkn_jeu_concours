@@ -107,9 +107,9 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 	(
 		'__selector__'                => array('type_jeu'),
 		'default'                     => 'type_jeu',
-		'formulaire'                  => 'type_jeu, date_begin, date_end, published, calendrier, title, subtitle, presentation, img, explication_texte, legal, img_validation, validation_texte, pdfSingleSRC',
-		'qcm'                     		=> 'type_jeu, date_begin, date_end, published, calendrier, title, subtitle, presentation, img, explication_texte, legal, img_validation, validation_texte, question, reponse_1, reponse_2, reponse_3, pdfSingleSRC',
-		'upload'                      => 'type_jeu, date_begin, date_end, published, calendrier, title, subtitle, presentation, img, explication_texte, legal, img_validation, validation_texte, pdfSingleSRC',
+		'formulaire'                  => 'type_jeu, date_begin, date_end, published, calendrier, title, subtitle, presentation, img, explication_texte, legal, pdfSingleSRC',
+		'qcm'                     		=> 'type_jeu, date_begin, date_end, published, calendrier, title, subtitle, presentation, img, explication_texte, legal, question, reponse_1, reponse_2, reponse_3, pdfSingleSRC',
+		'upload'                      => 'type_jeu, date_begin, date_end, published, calendrier, title, subtitle, presentation, img, explication_texte, legal, pdfSingleSRC',
 	),
 
 	// Subpalettes
