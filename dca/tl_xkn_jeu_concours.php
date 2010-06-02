@@ -182,7 +182,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'textarea',
-			'eval'                    => array('mandatory'=>true)
+			'eval'                    => array('mandatory'=>true, 'rte'=>'tinyMCE', 'helpwizard'=>true)
 		),
 		'img' => array
 		(
@@ -198,7 +198,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'textarea',
-			'eval'                    => array('mandatory'=>true)
+			'eval'                    => array('mandatory'=>true, 'rte'=>'tinyMCE', 'helpwizard'=>true)
 		),
 		'legal' => array
 		(
@@ -206,7 +206,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'textarea',
-			'eval'                    => array('mandatory'=>true)
+			'eval'                    => array('mandatory'=>true, 'rte'=>'tinyMCE', 'helpwizard'=>true)
 		),
 		'img_validation' => array
 		(
@@ -214,7 +214,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'fileTree',
-			'eval'                    => array('files'=>true, 'mandatory'=>true, 'extensions'=>'jpg, gif, png', 'fieldType'=>'radio'),
+			'eval'                    => array('files'=>true, 'extensions'=>'jpg, gif, png', 'fieldType'=>'radio'),
 		),
 		'validation_texte' => array
 		(
@@ -222,7 +222,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'textarea',
-			'eval'                    => array('mandatory'=>true)
+			'eval'                    => array('rte'=>'tinyMCE', 'helpwizard'=>true)
 		),
 		'pdfSingleSRC' => array
 		(
