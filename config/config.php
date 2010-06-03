@@ -26,6 +26,9 @@
  * @filesource
  */
 
+// Checking for dependencies
+
+$GLOBALS['XKN_MODULES']['XKN_MKG_ATTRIBUTES']['installed'] = file_exists(TL_ROOT.'/system/modules/xkn_mkg_attributes') ? true : false ;
 
 /**
  * -------------------------------------------------------------------------

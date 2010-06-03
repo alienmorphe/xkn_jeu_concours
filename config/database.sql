@@ -48,4 +48,5 @@ CREATE TABLE `tl_xkn_jeu_participation` (
 
 CREATE TABLE `tl_module` (
   `xkn_id_game` int(10) unsigned NOT NULL default '0',
+  `xkn_mkg_attributes` text NULL, 
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

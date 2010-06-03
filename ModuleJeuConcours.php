@@ -18,7 +18,7 @@ class ModuleJeuConcours extends Module
 			if (TL_MODE == 'BE')
 			{
 				$objTemplate = new BackendTemplate('be_wildcard');
-				$objTemplate->wildcard = '### Jeu concours ###';
+				$objTemplate->wildcard = '### JEU CONCOURS :: Formulaires ###';
 				
 				return $objTemplate->parse();
 			}
@@ -38,13 +38,15 @@ class ModuleJeuConcours extends Module
 		protected function compile()
 		{
 
+			// TODO : handling various kinds of games
 			
 			global $objPage;
 			$this->import('FrontendUser', 'User');
 			
+			// Post POST processing
+			
 			if(isset($_POST['FORM_SUBMIT']))
 			{
-//				echo " POST effectué ";
 				switch($_POST['FORM_SUBMIT'])
 				{
 
@@ -61,8 +63,14 @@ class ModuleJeuConcours extends Module
 				return;
 			}
   
-				if($this->Session->get('participationjeux_'.$this->id) == 'second')
-				{
+  
+  			/// Handling various steps forms
+  			
+  			switch($this->Session->get('participationjeux_'.$this->id))
+  			{
+  			
+  				case 'second':
+  			
 					$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="system/modules/xkn_ajax/js/ajaxDispatcher.js"></script>';
 					$GLOBALS['TL_HEAD'][] = '<link media="screen" type="text/css" href="/plugins/formcheck/theme/red/formcheck.css" rel="stylesheet" />';
 					$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/lang/fr.js"> </script>';
@@ -81,44 +89,48 @@ class ModuleJeuConcours extends Module
 
 			       		})
 
-			       		'.$strFormControls .'
-
-			       		$$(\'a\').addEvent(\'click\', function(){return false;});	
-						$(\'submit_jeu_end\').set({\'styles\': {\'display\': \'none\'}});
-
-						ajaxDispatcher.inform = function (el,status)
-						{
-							$(\'submit_\' + el).set({\'styles\': {\'display\': \'none\'}});
-
-							this.registered = this.registered.erase(el);
-							if(this.registered.length==0)
-							{
-								$(\'submit_jeu_end\').set({\'styles\': {\'display\': \'block\'}});
-							} 
-						}
-
-
-
 					});
 				  	</script>
 					';
 					$_action = $this->Environment->url. $this->Environment->requestUri;
-
+					$this->Template = new FrontendTemplate('mod_jeu_concours');
 					$this->Template->content = '<form action="'.$_action.'" id="xkn_form_jeu_end" method="post" enctype="application/x-www-form-urlencoded">
-			<input type="hidden" name="FORM_SUBMIT" value="xkn_form_jeu_end" />
-			<div class="clear"></div><div style="float:right"><div class="submit_container"><input type="submit" class="submit" id="submit_jeu_end" value="Valider votre participation" /></div></div></form>';
+			<input type="hidden" name="FORM_SUBMIT" value="xkn_form_jeu_end" /> ';
+			
+					// Adding Marketing Attributes if extension is installed
+					if($GLOBALS['XKN_MODULES']['XKN_MKG_ATTRIBUTES']['installed'])
+					{ 
+						$this->import('MkgAttributesIncludedForm');
+						$this->xkn_mkg_attributes = deserialize($this->xkn_mkg_attributes);
+						foreach($this->xkn_mkg_attributes as $xkn_mkg_attributes_group)
+						{
+							$objSTConfig = new stdClass();
+							$objSTConfig->xkn_mkg_attributes_group = $xkn_mkg_attributes_group;
+							$this->MkgAttributesIncludedForm->addFormToTemplate($this->Template, $objSTConfig);
+						}					
+					
+					}
+					
+					$this->Template->content .= '<div class="clear"></div><div style="float:right"><div class="submit_container"><input type="submit" class="submit" id="submit_jeu_end" value="Valider votre participation" /></div></div></form>';
 					$this->Session->set('participationjeux_'.$this->id, 'final');
-
-					return;
-				} elseif ($this->Session->get('participationjeux_'.$this->id) == 'last') {
+  			
+  					break;
+  					
+  					
+  				case 'last':	
+  			
 					$this->Template->content = "Merci de votre participation";
 					$this->Session->set('participationjeux_'.$this->id, '');
 
-
-					return;
-
-				} else {
-					$this->Session->set('participationjeux_'.$this->id, '');
+  			
+  					break;
+  					
+  					
+  				default:
+  				
+ 					// First step of the game
+ 					
+ 					$this->Session->set('participationjeux_'.$this->id, '');
 			
 					$already_played = $this->Database->prepare("select count(*) as played from tl_xkn_jeu_participation where pid = ? and id_participant = ? ")
 																					 ->execute($this->xkn_id_game, $this->User->id);
@@ -132,7 +144,7 @@ class ModuleJeuConcours extends Module
 						$this->Template->content = $_form->parse();
 					}
 					else{
-						$this->template = new FrontendTemplate('mod_jeu_concours');
+					$this->template = new FrontendTemplate('mod_jeu_concours');
 			      $arrJeuConcours = array();  
 			      $objJeux = $this->Database->prepare("SELECT * FROM tl_xkn_jeu_concours WHERE id = ? ORDER BY id")->execute($this->xkn_id_game);  
 			 			
@@ -166,12 +178,17 @@ class ModuleJeuConcours extends Module
 					  	</script>';
 						
 					}
-			 }
+ 				
+  					break;
+  			}
+  			
+  			return;
+  			
+  			
 		}
 		
 		protected function processDonneesUtilisateur()
 		{
-			//$this->params = base64_encode(serialize(array('mod_id'=> $this->id, 'lang' => $GLOBALS['TL_LANGUAGE'])));
 
 			$_param[] = array();
 			

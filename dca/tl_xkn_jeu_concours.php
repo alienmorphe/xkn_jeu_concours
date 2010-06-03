@@ -231,6 +231,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'inputType'               => 'fileTree',
 			'eval'                    => array('fieldType'=>'radio', 'files'=>true, 'mandatory'=>true, 'extensions'=>'pdf')
 		),
+
 	)
 );
 
