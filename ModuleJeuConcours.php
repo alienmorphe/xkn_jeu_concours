@@ -51,9 +51,7 @@ class ModuleJeuConcours extends Module
 				{
 
 					case "form_jeuConcours":
-						//$this->Template->content = $this->processFormInfoClub();
 						$this->processDonneesUtilisateur();
-						//$this->processInscriptionJeu();
 						break;
 					
 					case "xkn_form_jeu_end":
@@ -64,22 +62,71 @@ class ModuleJeuConcours extends Module
 			}
   
   
-  			/// Handling various steps forms
+  			/// Handling forms for the various steps 
   			
   			switch($this->Session->get('participationjeux_'.$this->id))
   			{
   			
   				case 'second':
-  			
+  					
+  					// Second step of the game
+  					// -> Display Mkg Attributes if they are set in the BE
+  					
+					$_action = $this->Environment->url. $this->Environment->requestUri;
+					$this->Template = new FrontendTemplate('mod_jeu_concours');
+					$this->Template->content = '<form action="'.$_action.'" id="xkn_form_jeu_end" method="post" enctype="application/x-www-form-urlencoded">
+						<input type="hidden" name="source" value="GAME_' . $this->xkn_id_game . '" />
+						<input type="hidden" name="FORM_SUBMIT" value="xkn_form_jeu_end" /> ';
+			
+					// Adding Marketing Attributes if extension is installed
+					if($GLOBALS['XKN_MODULES']['XKN_MKG_ATTRIBUTES']['installed'] && strlen($this->xkn_mkg_attributes))
+					{ 
+						$this->import('MkgAttributesIncludedForm');
+						$this->xkn_mkg_attributes = deserialize($this->xkn_mkg_attributes);
+						$objSTJs = new stdClass();
+						$objSTJs->jsFormCheckAlerts = array();
+						$objSTJs->jsFormCheckRegexp =  array();
+						$objSTJs->jsOnChange =  array();
+						
+						foreach($this->xkn_mkg_attributes as $xkn_mkg_attributes_group)
+						{
+							$objSTConfig = new stdClass();
+							$objSTConfig->xkn_mkg_attributes_group = $xkn_mkg_attributes_group;
+							$objJs = $this->MkgAttributesIncludedForm->addFormToTemplate($this->Template, $objSTConfig, $objSTJs);
+						}					
+					
+					}
+					
+					// Adding all the js needed for FormCheck AFTER the Mkg_attributes are loaded to allow for custom alerts and regexp
+					
 					$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="system/modules/xkn_ajax/js/ajaxDispatcher.js"></script>';
 					$GLOBALS['TL_HEAD'][] = '<link media="screen" type="text/css" href="/plugins/formcheck/theme/red/formcheck.css" rel="stylesheet" />';
 					$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/lang/fr.js"> </script>';
 					$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/formcheck.js"> </script>';
+					
 					$GLOBALS['TL_HEAD'][] = '<script type="text/javascript">
 			         window.addEvent(\'domready\', function(){
-			          	var myCheck = new FormCheck(\'xkn_form_register_profil\', {
+			          	var myCheck = new FormCheck(\'xkn_form_jeu_end\', {
 
-						'. $strFormCheck .'
+						' . 
+						(
+							(is_array($objJs->jsFormCheckAlerts) && count($objJs->jsFormCheckAlerts) > 0 ) ?
+								'
+								alerts : {' .implode(',', $objJs->jsFormCheckAlerts) . '},'
+								: ''
+						
+						)
+						
+						 . 
+						(
+							(is_array($objJs->jsFormCheckRegexp) && count($objJs->jsFormCheckRegexp) > 0 ) ?
+								'
+								regexp : {' .implode(',', $objJs->jsFormCheckRegexp) . '},'
+								: ''
+						
+						)
+						
+						.'
 			            display : {
 			                scrollToFirst : true,
 			                titlesInsteadNames:1,
@@ -88,37 +135,41 @@ class ModuleJeuConcours extends Module
 						submit:true
 
 			       		})
+			       		
+			       		'.
+			       		(
+			       			(is_array($objJs->jsOnChange) && count($objJs->jsOnChange) > 0 ) ?
+								'
+								ajaxDispatcher.refresh = function (el,value,params){
+									jsparams = {
+	      								ctrl : el,
+	      								value : value
+	      							};
+
+									ajaxDispatcher.request(el,el,\'MkgAttributesForm\',\'refreshCtrl\',params,jsparams);
+									return true;
+
+								};
+								
+								 '.implode('
+								 ', $objJs->jsOnChange)
+								: ''
+			       		)
+			       		.'
 
 					});
 				  	</script>
 					';
-					$_action = $this->Environment->url. $this->Environment->requestUri;
-					$this->Template = new FrontendTemplate('mod_jeu_concours');
-					$this->Template->content = '<form action="'.$_action.'" id="xkn_form_jeu_end" method="post" enctype="application/x-www-form-urlencoded">
-			<input type="hidden" name="FORM_SUBMIT" value="xkn_form_jeu_end" /> ';
-			
-					// Adding Marketing Attributes if extension is installed
-					if($GLOBALS['XKN_MODULES']['XKN_MKG_ATTRIBUTES']['installed'])
-					{ 
-						$this->import('MkgAttributesIncludedForm');
-						$this->xkn_mkg_attributes = deserialize($this->xkn_mkg_attributes);
-						foreach($this->xkn_mkg_attributes as $xkn_mkg_attributes_group)
-						{
-							$objSTConfig = new stdClass();
-							$objSTConfig->xkn_mkg_attributes_group = $xkn_mkg_attributes_group;
-							$this->MkgAttributesIncludedForm->addFormToTemplate($this->Template, $objSTConfig);
-						}					
-					
-					}
 					
 					$this->Template->content .= '<div class="clear"></div><div style="float:right"><div class="submit_container"><input type="submit" class="submit" id="submit_jeu_end" value="Valider votre participation" /></div></div></form>';
-					$this->Session->set('participationjeux_'.$this->id, 'final');
   			
   					break;
   					
   					
   				case 'last':	
   			
+					// Last step of the game
+					
 					$this->Template->content = "Merci de votre participation";
 					$this->Session->set('participationjeux_'.$this->id, '');
 
@@ -130,7 +181,6 @@ class ModuleJeuConcours extends Module
   				
  					// First step of the game
  					
- 					$this->Session->set('participationjeux_'.$this->id, '');
 			
 					$already_played = $this->Database->prepare("select count(*) as played from tl_xkn_jeu_participation where pid = ? and id_participant = ? ")
 																					 ->execute($this->xkn_id_game, $this->User->id);
@@ -159,8 +209,8 @@ class ModuleJeuConcours extends Module
 						$this->Template->content = $_form->parse();
 								$GLOBALS['TL_HEAD'][] = '<link media="screen" type="text/css" href="/plugins/formcheck/theme/red/formcheck.css" rel="stylesheet" />
 						';
-								$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/lang/fr.js"> </script>';
-								$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/formcheck.js"> </script>';
+						$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/lang/fr.js"> </script>';
+						$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/formcheck.js"> </script>';
 						$GLOBALS['TL_HEAD'][] = '<script type="text/javascript">
 				         window.addEvent(\'domready\', function(){
 				          	var myCheck = new FormCheck(\'xkn_form_jeuConcours\', {
@@ -247,18 +297,36 @@ class ModuleJeuConcours extends Module
 		}
 		protected function processInscriptionJeu()
 		{
-			//$this->params = base64_encode(serialize(array('mod_id'=> $this->id, 'lang' => $GLOBALS['TL_LANGUAGE'])));
 
 			$_param[] = array();
 		
-			
-			//var_dump($_param);
 			$this->import('FrontendUser', 'User');
+			
 
+			// Saving Marketing Attributes if extension is installed
+			if($GLOBALS['XKN_MODULES']['XKN_MKG_ATTRIBUTES']['installed'] && strlen($this->xkn_mkg_attributes))
+			{ 
+				$this->import('MkgAttributesIncludedForm');
+				$this->xkn_mkg_attributes = deserialize($this->xkn_mkg_attributes);
+				foreach($this->xkn_mkg_attributes as $xkn_mkg_attributes_group)
+				{
+					$objSTConfig = new stdClass();
+					$objSTConfig->xkn_mkg_attributes_group = $xkn_mkg_attributes_group;
+					$this->MkgAttributesIncludedForm->saveAttributes($objSTConfig);
+				}					
+			
+			}
+
+
+
+			// Save the game participation
+			
 			$inscriptionJeu = $this->Database->prepare("insert into tl_xkn_jeu_participation (id, tstamp, pid, id_participant, date, reponse, upload) 
 				value(?, ?, ?, ? , ?, ?, ?)")
 				->execute("", time(), $this->xkn_id_game, $this->User->id, date("Y/m/d"), NULL, NULL );
-				//echo $inscriptionJeu->query;
+
+
+
 				// Redirect to jumpTo page
 				if (strlen($this->xkn_jumpTo))
 				{
