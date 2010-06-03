@@ -74,7 +74,7 @@ class ModuleJeuConcours extends Module
   					
 					$_action = $this->Environment->url. $this->Environment->requestUri;
 					$this->Template = new FrontendTemplate('mod_jeu_concours');
-					$this->Template->content = '<form action="'.$_action.'" id="xkn_form_jeu_end" method="post" enctype="application/x-www-form-urlencoded">
+					$this->Template->content = '<div style="float:right"><img src="tl_files/images/jeux-uploads/etape2.jpg" alt="Etape 2/2"></div><form action="'.$_action.'" id="xkn_form_jeu_end" method="post" enctype="application/x-www-form-urlencoded">
 						<input type="hidden" name="source" value="GAME_' . $this->xkn_id_game . '" />
 						<input type="hidden" name="FORM_SUBMIT" value="xkn_form_jeu_end" /> ';
 			
@@ -161,7 +161,7 @@ class ModuleJeuConcours extends Module
 				  	</script>
 					';
 					
-					$this->Template->content .= '<div class="clear"></div><div style="float:right"><div class="submit_container"><input type="submit" class="submit" id="submit_jeu_end" value="Valider votre participation" /></div></div></form>';
+					$this->Template->content .= '<div class="clear"></div><div class="info">En validant votre participation, vous certifiez avoir lu et accept&eacute; le r&egrave;glement de jeu dans son int&eacute;gralit&eacute;.</div><div style="float:right"><div class="submit_container"><input type="submit" class="submit" id="submit_jeu_end" value="Valider votre participation" /></div></div></form>';
   			
   					break;
   					
@@ -170,7 +170,7 @@ class ModuleJeuConcours extends Module
   			
 					// Last step of the game
 					
-					$this->Template->content = "Merci de votre participation";
+					$this->Template->content = "<div class="ce_text block">Votre participation est prise en compte.<br />SEAT vous remercie et vous souhaite bonne chance</div>";
 					$this->Session->set('participationjeux_'.$this->id, '');
 
   			
@@ -206,7 +206,7 @@ class ModuleJeuConcours extends Module
 						$this->Template->action = $this->Environment->url. $this->Environment->requestUri;
 						$_form = new FrontendTemplate('xkn_form_jeu_concours');
 						$_form->User = $this->User;
-						$this->Template->content = $_form->parse();
+						$this->Template->content = '<div style="float:right"><img src="tl_files/images/jeux-uploads/etape1.jpg" alt="Etape 1/2"></div>'.$_form->parse();
 								$GLOBALS['TL_HEAD'][] = '<link media="screen" type="text/css" href="/plugins/formcheck/theme/red/formcheck.css" rel="stylesheet" />
 						';
 						$GLOBALS['TL_HEAD'][] = '<script type="text/javascript" src="/plugins/formcheck/lang/fr.js"> </script>';
