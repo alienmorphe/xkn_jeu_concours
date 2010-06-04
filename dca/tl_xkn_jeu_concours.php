@@ -69,16 +69,9 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'edit' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_xkn_jeu_concours']['edit'],
-				'href'                => 'table=tl_xkn_jeu_concours',
+				'href'                => 'act=edit',
 				'icon'                => 'edit.gif',
 				'attributes'          => 'class="edit"'
-			),
-			'editheader' => array
-			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_xkn_jeu_concours']['editheader'],
-				'href'                => 'act=edit',
-				'icon'                => 'header.gif',
-				'attributes'          => 'class="edit-header"'
 			),
 			'copy' => array
 			(
@@ -230,8 +223,7 @@ $GLOBALS['TL_DCA']['tl_xkn_jeu_concours'] = array
 			'exclude'                 => true,
 			'inputType'               => 'fileTree',
 			'eval'                    => array('fieldType'=>'radio', 'files'=>true, 'mandatory'=>true, 'extensions'=>'pdf')
-		),
-
+		)
 	)
 );
 

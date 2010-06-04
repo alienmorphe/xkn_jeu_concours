@@ -18,7 +18,7 @@ CREATE TABLE `tl_xkn_jeu_concours` (
   `allow_late_inscription` int(11) DEFAULT '1',
   `subtitle` text,
   `presentation` text,
-  `img` varchar(50) DEFAULT NULL,
+  `img` varchar(255) DEFAULT NULL,
   `explication_texte` text,
   `legal` text,
   `img_validation` varchar(50) DEFAULT NULL,
